@@ -29,7 +29,7 @@ export default function DrawerComponent({ drawerOpen, setDrawerOpen, title }) {
         {title === "Board" ? (
           <div className="w-full">
             <DrawerHeader title={"Appointment Details"} />
-            <div className="mt-3 w-3/5 mx-auto cursor-pointer hover:bg-gray-100">
+            <div className="mt-3 w-full sm:w-3/5 mx-auto cursor-pointer hover:bg-gray-100">
               <div className="ring-2 ring-slate-100 shadow-lg rounded-lg p-3 ">
                 <div className="flex justify-between mx-5">
                   <div>
@@ -44,7 +44,7 @@ export default function DrawerComponent({ drawerOpen, setDrawerOpen, title }) {
                 </div>
               </div>
             </div>
-            <div className="mt-3 w-3/5 mx-auto cursor-pointer hover:bg-gray-100">
+            <div className="mt-3 w-full sm:w-3/5 mx-auto cursor-pointer hover:bg-gray-100">
               <div className="ring-2 ring-slate-100 shadow-lg rounded-lg p-3 ">
                 <div className="flex justify-between mx-5">
                   <div>
@@ -59,7 +59,7 @@ export default function DrawerComponent({ drawerOpen, setDrawerOpen, title }) {
                 </div>
               </div>
             </div>
-            <div className="mt-3 w-3/5 mx-auto cursor-pointer hover:bg-gray-100">
+            <div className="mt-3 w-full sm:w-3/5 mx-auto cursor-pointer hover:bg-gray-100">
               <div className="ring-2 ring-slate-100 shadow-lg rounded-lg p-3 ">
                 <div className="flex justify-between mx-5">
                   <div>
@@ -99,7 +99,7 @@ export default function DrawerComponent({ drawerOpen, setDrawerOpen, title }) {
           <div>
             <DrawerHeader title={"Add Note"} />
             <div className="w-full flex justify-center mt-5">
-              <div className="w-3/5">
+              <div className="w-full sm:w-3/5 ">
                 <textarea
                   placeholder="Enter Note"
                   rows={4}
