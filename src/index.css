@@ -17,11 +17,11 @@ code {
 }
 
 .screencontainer{
-  display:flex ;
+  /* display:flex ;
   flex-direction:column ;
   justify-content: end;
   padding-left: 300px;
-  margin-inline-start: 50%;
+  margin-inline-start: 50%; */
 }
 
 .callcontainer {

@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVideo, faVideoSlash, faMicrophone, faMicrophoneSlash, faDesktop, faPhone } from "@fortawesome/free-solid-svg-icons";
+import {
+  faVideo,
+  faVideoSlash,
+  faMicrophone,
+  faMicrophoneSlash,
+  faDesktop,
+  faPhone,
+} from "@fortawesome/free-solid-svg-icons";
 
 var apiKey = "47059854";
-var sessionId ="2_MX40NzA1OTg1NH5-MTcxMTcwMzMyNDQ1NH5tUW50NjJkNHpqWit0WUo2UmMrbXR4cmZ-fn4";
-var token ="T1==cGFydG5lcl9pZD00NzA1OTg1NCZzaWc9MWVlY2YwZDI4OWQ0NzYzYzk4YWM5MzJhYTU2NGViMjg0ZTM2YjdmYjpzZXNzaW9uX2lkPTJfTVg0ME56QTFPVGcxTkg1LU1UY3hNVGN3TXpNeU5EUTFOSDV0VVc1ME5qSmtOSHBxV2l0MFdVbzJVbU1yYlhSNGNtWi1mbjQmY3JlYXRlX3RpbWU9MTcxMTcwMzM3MyZub25jZT0wLjI0Mzc2OTIxNzczOTQ1MjYmcm9sZT1wdWJsaXNoZXImZXhwaXJlX3RpbWU9MTcxNDI5NTM3MiZpbml0aWFsX2xheW91dF9jbGFzc19saXN0PQ==";
+var sessionId =
+  "2_MX40NzA1OTg1NH5-MTcxMTcwMzMyNDQ1NH5tUW50NjJkNHpqWit0WUo2UmMrbXR4cmZ-fn4";
+var token =
+  "T1==cGFydG5lcl9pZD00NzA1OTg1NCZzaWc9MWVlY2YwZDI4OWQ0NzYzYzk4YWM5MzJhYTU2NGViMjg0ZTM2YjdmYjpzZXNzaW9uX2lkPTJfTVg0ME56QTFPVGcxTkg1LU1UY3hNVGN3TXpNeU5EUTFOSDV0VVc1ME5qSmtOSHBxV2l0MFdVbzJVbU1yYlhSNGNtWi1mbjQmY3JlYXRlX3RpbWU9MTcxMTcwMzM3MyZub25jZT0wLjI0Mzc2OTIxNzczOTQ1MjYmcm9sZT1wdWJsaXNoZXImZXhwaXJlX3RpbWU9MTcxNDI5NTM3MiZpbml0aWFsX2xheW91dF9jbGFzc19saXN0PQ==";
 
 function handleError(error) {
   if (error) {
@@ -15,7 +24,7 @@ function handleError(error) {
 function Session() {
   const [otLoaded, setOtLoaded] = useState(false);
   const [publisher, setPublisher] = useState(null);
-  const [cameraEnabled, setCameraEnabled] = useState(true);
+  const [cameraEnabled, setCameraEnabled] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [screenSharingEnabled, setScreenSharingEnabled] = useState(false);
 
@@ -48,7 +57,7 @@ function Session() {
         .getUserMedia({ video: true, audio: true })
         .then((stream) => {
           const session = window.OT.initSession(apiKey, sessionId);
-          globalSession=session;
+          globalSession = session;
           session.on("streamCreated", function (event) {
             session.subscribe(
               event.stream,
@@ -123,21 +132,41 @@ function Session() {
     if (globalSession) {
       globalSession.disconnect(); // Disconnect from the session
     }
-};
-
+  };
 
   return (
-    <><div className="screencontainer">
-      <div id="videos" style={{ display: "flex", width:"40vw", flexDirection: "row", justifyContent: "flex-end", alignContent: "right" }}>
-        <div id="publisher" className="w-[50vh] h-[40vh]" style={{ paddingLeft: "100px" }}></div>
+    <>
+      <div className="relative w-full flex justify-end">
+        <div
+          id="videos"
+          style={{
+            // display: "flex",
+            // width: "40vw",
+            // flexDirection: "row",
+            // justifyContent: "flex-end",
+            // alignContent: "right",
+          }}
+        >
+          <div
+            id="publisher"
+            className="w-[50vh] h-[40vh]"
+            style={{ paddingLeft: "100px" }}
+          ></div>
+        </div>
       </div>
-    </div><div className="callcontainer">
-        <div className="callbuttons-container">
+      <div className="h-[50vh]">
+        <div className="callbuttons-container items-end h-full">
           <button className="callbutton" onClick={toggleCamera}>
-            <FontAwesomeIcon icon={cameraEnabled ? faVideo : faVideoSlash} className="icon" />
+            <FontAwesomeIcon
+              icon={cameraEnabled ? faVideoSlash : faVideo}
+              className="icon"
+            />
           </button>
           <button className="callbutton" onClick={toggleAudio}>
-            <FontAwesomeIcon icon={audioEnabled ? faMicrophone : faMicrophoneSlash} className="icon" />
+            <FontAwesomeIcon
+              icon={audioEnabled ? faMicrophone : faMicrophoneSlash}
+              className="icon"
+            />
           </button>
           <button className="callbutton" onClick={toggleScreenSharing}>
             <FontAwesomeIcon icon={faDesktop} className="icon" />
@@ -146,7 +175,8 @@ function Session() {
             <FontAwesomeIcon icon={faPhone} className="icon" />
           </button>
         </div>
-      </div></>
+      </div>
+    </>
   );
 }
 

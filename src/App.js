@@ -5,7 +5,7 @@ import Call from "./components/Call";
 function App() {
 
   return (
-    <div className="container">
+    <div className="m-5 overflow-hidden">
       <Header/>
       <Call/>
     </div>

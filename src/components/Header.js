@@ -31,7 +31,7 @@ export default function Header() {
   };
 
   return (
-    <div className="inline-flex relative">
+    <div className="inline-flex relative z-50">
       <div
         className="rounded-full p-3 bg-blue-400 absolute left-5 cursor-pointer"
         onClick={() => setOpen(!open)}
