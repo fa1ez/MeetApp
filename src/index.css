@@ -15,3 +15,54 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.screencontainer{
+  display:flex ;
+  flex-direction:column ;
+  justify-content: end;
+  padding-left: 300px;
+  margin-inline-start: 50%;
+}
+
+.callcontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  margin-inline-start: 20%;
+  height: 55vh; /* Adjust as needed */
+}
+
+.callbuttons-container {
+  display: flex; /* Make the container flex */
+  justify-content: center; /* Center the buttons horizontally */
+  margin-bottom: 20px; /* Adjust as needed */
+}
+
+.callbuttons-container button {
+  margin: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 25px; /* Make buttons round */
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.callbuttons-container button:hover {
+  background-color: #0056b3;
+}
+
+.callbuttons-container button .icon {
+  margin-right: 5px;
+}
+
+.callaudio-call-container,
+.callvideo-call-container {
+  margin-top: 0px; /* Adjust as needed */
+}
+
+/* Add more styling as needed */
