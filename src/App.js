@@ -5,7 +5,7 @@ import Call from "./components/Call";
 function App() {
 
   return (
-    <div className="m-5 overflow-hidden">
+    <div className="p-5 overflow-hidden from-[#000] to-[#1f1f1f] bg-gradient-to-b">
       <Header/>
       <Call/>
     </div>
