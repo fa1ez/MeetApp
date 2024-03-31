@@ -25,7 +25,7 @@ function Session() {
   const [otLoaded, setOtLoaded] = useState(false);
   const [publisher, setPublisher] = useState(null);
   const [cameraEnabled, setCameraEnabled] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [audioEnabled, setAudioEnabled] = useState(false);
   const [screenSharingEnabled, setScreenSharingEnabled] = useState(false);
 
   useEffect(() => {
@@ -136,25 +136,20 @@ function Session() {
 
   return (
     <>
-      <div className="relative w-full flex justify-end">
-        <div
-          id="videos"
-          style={{
-            // display: "flex",
-            // width: "40vw",
-            // flexDirection: "row",
-            // justifyContent: "flex-end",
-            // alignContent: "right",
-          }}
-        >
+      <div className="relative w-full flex justify-center items-center lg:items-start lg:flex-row flex-col gap-2">
+        <div id="videos-2" >
+          <div className=" w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700 "></div>
+        </div>
+        <div id="videos">
           <div
             id="publisher"
-            className="w-[50vh] h-[40vh]"
-            style={{ paddingLeft: "100px" }}
+            className="w-[80vw] h-[40vh] lg:w-[50vh] lg:h-[40vh]"
+            // style={{ paddingLeft: "100px" }}
           ></div>
         </div>
       </div>
-      <div className="h-[50vh]">
+
+      <div className="mt-3">
         <div className="callbuttons-container items-end h-full">
           <button className="callbutton" onClick={toggleCamera}>
             <FontAwesomeIcon
@@ -164,7 +159,7 @@ function Session() {
           </button>
           <button className="callbutton" onClick={toggleAudio}>
             <FontAwesomeIcon
-              icon={audioEnabled ? faMicrophone : faMicrophoneSlash}
+              icon={audioEnabled ? faMicrophoneSlash : faMicrophone}
               className="icon"
             />
           </button>
