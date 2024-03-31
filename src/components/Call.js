@@ -115,15 +115,33 @@ function Session() {
   };
 
   const toggleScreenSharing = () => {
-    setScreenSharingEnabled(!screenSharingEnabled);
+    const newScreenSharingEnabled = !screenSharingEnabled; // Toggle the state
+  
     if (publisher) {
-      if (screenSharingEnabled) {
-        publisher.publishVideo(true); // Resume camera video
+      if (newScreenSharingEnabled) {
+        // Start screen sharing
+        navigator.mediaDevices.getDisplayMedia({ video: true }) // Request screen sharing stream
+          .then((stream) => {
+            publisher.replaceTrack(stream.getVideoTracks()[0]); // Replace camera track with screen sharing track
+          })
+          .catch((error) => {
+            console.error('Error accessing screen sharing:', error);
+          });
       } else {
-        publisher.publishVideo(false); // Pause camera video
+        // Stop screen sharing and resume camera video
+        navigator.mediaDevices.getUserMedia({ video: true }) // Request camera video stream
+          .then((stream) => {
+            publisher.replaceTrack(stream.getVideoTracks()[0]); // Replace screen sharing track with camera track
+          })
+          .catch((error) => {
+            console.error('Error accessing camera:', error);
+          });
       }
     }
+  
+    setScreenSharingEnabled(newScreenSharingEnabled); // Update the state
   };
+  
 
   const disconnectCall = () => {
     if (publisher) {
