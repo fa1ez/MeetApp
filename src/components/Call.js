@@ -138,7 +138,9 @@ function Session() {
     <>
       <div className="relative w-full flex justify-center items-center lg:items-start lg:flex-row flex-col gap-2">
         <div id="videos-2" >
-          <div className=" w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700 "></div>
+          <div className=" w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700 ">
+          <div id="subscriber" className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700"></div>
+          </div>
         </div>
         <div id="videos">
           <div
