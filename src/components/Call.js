@@ -7,6 +7,9 @@ import {
   faMicrophoneSlash,
   faDesktop,
   faPhone,
+  faRecordVinyl,
+  faClapperboard,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
 var apiKey = "47059854";
@@ -26,6 +29,7 @@ function Session() {
   const [publisher, setPublisher] = useState(null);
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [screenSharingEnabled, setScreenSharingEnabled] = useState(false);
   const [globalSession, setGlobalSession] = useState(null);
   const [subscriber, setSubscriber] = useState(null);
@@ -123,61 +127,94 @@ function Session() {
   let screenSubscriber = null; // Variable to hold screen subscriber
 
   const toggleScreenSharing = () => {
-  if (screenSharingEnabled) {
-    // If screen sharing is enabled, stop sharing the screen
-    if (screenPublisher) {
-      screenPublisher.destroy();
-      screenPublisher = null;
-      setScreenSharingEnabled(false);
-      // Remove the screen publisher's video element from the container
-      const screenVideoElement = document.getElementById("screen");
-      if (screenVideoElement) {
-        screenVideoElement.remove();
+    if (screenSharingEnabled) {
+      // If screen sharing is enabled, stop sharing the screen
+      if (screenPublisher) {
+        screenPublisher.destroy();
+        screenPublisher = null;
+        setScreenSharingEnabled(false);
+        // Remove the screen publisher's video element from the container
+        const screenVideoElement = document.getElementById("screen");
+        if (screenVideoElement) {
+          screenVideoElement.remove();
+        }
       }
+    } else {
+      // If screen sharing is not enabled, request permission to share the screen
+      navigator.mediaDevices
+        .getDisplayMedia({ video: true }) // This prompts the user to select a screen to share
+        .then((stream) => {
+          // Initialize screen publisher
+          screenPublisher = window.OT.initPublisher(
+            "screen",
+            {
+              videoSource: "screen",
+              insertMode: "append",
+              width: "100%",
+              height: "100%",
+              stream: stream,
+            },
+            (error) => {
+              if (error) {
+                console.error("Error initializing screen publisher:", error);
+                return;
+              }
+              // Append the screen publisher's video element to the specified container
+              const screenVideoElement = document.createElement("video");
+              screenVideoElement.id = "screen";
+              screenVideoElement.srcObject = stream;
+              screenVideoElement.autoplay = true;
+              const screenContainer = document.getElementById("videos");
+              if (screenContainer) {
+                screenContainer.appendChild(screenVideoElement);
+              }
+              // Publish the screen share publisher to the session
+              globalSession.publish(screenPublisher, handleError);
+              setScreenSharingEnabled(true);
+            }
+          );
+        })
+        .catch((error) => {
+          console.error("Error accessing screen sharing:", error);
+        });
     }
-  } else {
-    // If screen sharing is not enabled, request permission to share the screen
-    navigator.mediaDevices
-      .getDisplayMedia({ video: true }) // This prompts the user to select a screen to share
-      .then((stream) => {
-        // Initialize screen publisher
-        screenPublisher = window.OT.initPublisher(
-          "screen",
-          {
-            videoSource: "screen",
-            insertMode: "append",
-            width: "100%",
-            height: "100%",
-            stream: stream,
-          },
-          (error) => {
-            if (error) {
-              console.error("Error initializing screen publisher:", error);
-              return;
-            }
-            // Append the screen publisher's video element to the specified container
-            const screenVideoElement = document.createElement("video");
-            screenVideoElement.id = "screen";
-            screenVideoElement.srcObject = stream;
-            screenVideoElement.autoplay = true;
-            const screenContainer = document.getElementById("videos");
-            if (screenContainer) {
-              screenContainer.appendChild(screenVideoElement);
-            }
-            // Publish the screen share publisher to the session
-            globalSession.publish(screenPublisher, handleError);
-            setScreenSharingEnabled(true);
-          }
-        );
+  };
+
+  const startRecording = () => {
+    //start recording here
+    setIsRecording(!isRecording);
+
+    //recording code here
+    const url = isRecording
+      ? "https://api.opentok.com/v2/project/<PROJECT_ID>/archive"
+      : "https://your-endpoint.com/startRecording";
+    const method = isRecording ? "DELETE" : "POST";
+
+    fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+        // Add any necessary headers here
+      },
+      body: JSON.stringify({
+        apiKey: apiKey,
+        sessionId: sessionId,
+        // Include other necessary data here
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!isRecording) {
+          console.log("Recording started, data:", data);
+        } else {
+          console.log("Recording stopped, URL:", data.url);
+        }
+        setIsRecording(!isRecording);
       })
       .catch((error) => {
-        console.error("Error accessing screen sharing:", error);
+        console.error("Error:", error);
       });
-  }
-};
-
-  
-  
+  };
 
   const disconnectCall = () => {
     if (publisher) {
@@ -198,10 +235,12 @@ function Session() {
                 id="screenContainer"
                 className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700"
               ></div>
-            ) : (<div
-              id="subscriber"
-              className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700"
-            ></div>)}
+            ) : (
+              <div
+                id="subscriber"
+                className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700"
+              ></div>
+            )}
           </div>
         </div>
 
@@ -233,6 +272,12 @@ function Session() {
           </button>
           <button className="callbutton" onClick={disconnectCall}>
             <FontAwesomeIcon icon={faPhone} className="icon" />
+          </button>
+          <button className="callbutton" onClick={startRecording}>
+            <FontAwesomeIcon
+              icon={isRecording ? faXmark : faClapperboard}
+              className="icon"
+            />
           </button>
         </div>
       </div>
