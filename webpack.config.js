@@ -1,11 +1,10 @@
 const path = require('path');
 
 module.exports = {
-  resolve: {
-    fallback: {
-      "path": require.resolve("path-browserify"),
-      "os": require.resolve("os-browserify/browser"),
-      "crypto": require.resolve("crypto-browserify")
-    }
+  // other webpack configuration...
+  devServer: {
+    contentBase: path.resolve(__dirname, 'dist'),
+    https:true
+    // other devServer options...
   },
 };

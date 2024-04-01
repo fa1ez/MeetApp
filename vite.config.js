@@ -12,4 +12,11 @@ export default defineConfig({
             localsConvention: "camelCaseOnly",
         },
     },
+
+    server: {
+        https: {
+          key: 'localhost-key.pem',
+          cert: 'localhost.pem'
+        }
+      }
 })

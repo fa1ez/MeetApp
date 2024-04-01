@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faVideo,
@@ -27,6 +27,8 @@ function Session() {
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [screenSharingEnabled, setScreenSharingEnabled] = useState(false);
+  const [globalSession, setGlobalSession] = useState(null);
+  const [subscriber, setSubscriber] = useState(null);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -49,26 +51,29 @@ function Session() {
     }
   }, [otLoaded]);
 
-  var globalSession;
-
   function initializeSession() {
     if (typeof window.OT !== "undefined") {
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: true })
         .then((stream) => {
           const session = window.OT.initSession(apiKey, sessionId);
-          globalSession = session;
+          setGlobalSession(session);
           session.on("streamCreated", function (event) {
-            session.subscribe(
-              event.stream,
-              "subscriber",
-              {
-                insertMode: "append",
-                width: "100%",
-                height: "100%",
-              },
-              handleError
-            );
+            // Check if the stream is a screen sharing stream
+            if (event.stream.videoType === "camera") {
+              // Subscribe to the screen sharing stream
+              const sub = session.subscribe(
+                event.stream,
+                "subscriber",
+                {
+                  insertMode: "append",
+                  width: "100%",
+                  height: "100%",
+                },
+                handleError
+              );
+              setSubscriber(sub); // Set subscriber state
+            }
           });
 
           const pub = window.OT.initPublisher(
@@ -114,33 +119,64 @@ function Session() {
     }
   };
 
+  let screenPublisher = null;
+  let screenSubscriber = null; // Variable to hold screen subscriber
+
   const toggleScreenSharing = () => {
-    const newScreenSharingEnabled = !screenSharingEnabled; // Toggle the state
-  
-    if (publisher) {
-      if (newScreenSharingEnabled) {
-        // Start screen sharing
-        navigator.mediaDevices.getDisplayMedia({ video: true }) // Request screen sharing stream
-          .then((stream) => {
-            publisher.replaceTrack(stream.getVideoTracks()[0]); // Replace camera track with screen sharing track
-          })
-          .catch((error) => {
-            console.error('Error accessing screen sharing:', error);
-          });
-      } else {
-        // Stop screen sharing and resume camera video
-        navigator.mediaDevices.getUserMedia({ video: true }) // Request camera video stream
-          .then((stream) => {
-            publisher.replaceTrack(stream.getVideoTracks()[0]); // Replace screen sharing track with camera track
-          })
-          .catch((error) => {
-            console.error('Error accessing camera:', error);
-          });
+  if (screenSharingEnabled) {
+    // If screen sharing is enabled, stop sharing the screen
+    if (screenPublisher) {
+      screenPublisher.destroy();
+      screenPublisher = null;
+      setScreenSharingEnabled(false);
+      // Remove the screen publisher's video element from the container
+      const screenVideoElement = document.getElementById("screen");
+      if (screenVideoElement) {
+        screenVideoElement.remove();
       }
     }
+  } else {
+    // If screen sharing is not enabled, request permission to share the screen
+    navigator.mediaDevices
+      .getDisplayMedia({ video: true }) // This prompts the user to select a screen to share
+      .then((stream) => {
+        // Initialize screen publisher
+        screenPublisher = window.OT.initPublisher(
+          "screen",
+          {
+            videoSource: "screen",
+            insertMode: "append",
+            width: "100%",
+            height: "100%",
+            stream: stream,
+          },
+          (error) => {
+            if (error) {
+              console.error("Error initializing screen publisher:", error);
+              return;
+            }
+            // Append the screen publisher's video element to the specified container
+            const screenVideoElement = document.createElement("video");
+            screenVideoElement.id = "screen";
+            screenVideoElement.srcObject = stream;
+            screenVideoElement.autoplay = true;
+            const screenContainer = document.getElementById("videos");
+            if (screenContainer) {
+              screenContainer.appendChild(screenVideoElement);
+            }
+            // Publish the screen share publisher to the session
+            globalSession.publish(screenPublisher, handleError);
+            setScreenSharingEnabled(true);
+          }
+        );
+      })
+      .catch((error) => {
+        console.error("Error accessing screen sharing:", error);
+      });
+  }
+};
+
   
-    setScreenSharingEnabled(newScreenSharingEnabled); // Update the state
-  };
   
 
   const disconnectCall = () => {
@@ -155,11 +191,20 @@ function Session() {
   return (
     <>
       <div className="relative w-full flex justify-center items-center lg:items-start lg:flex-row flex-col gap-2">
-        <div id="videos-2" >
-          <div className=" w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700 ">
-          <div id="subscriber" className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700"></div>
+        <div id="videos-2">
+          <div className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700">
+            {screenSharingEnabled ? (
+              <div
+                id="screenContainer"
+                className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700"
+              ></div>
+            ) : (<div
+              id="subscriber"
+              className="w-[80vw] h-[40vh] lg:w-[65vw] lg:h-[80vh] bg-slate-700"
+            ></div>)}
           </div>
         </div>
+
         <div id="videos">
           <div
             id="publisher"
