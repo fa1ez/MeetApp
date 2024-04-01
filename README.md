@@ -6,6 +6,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+## Screen Sharing
+to accurate check the screen sharing function use https instead of http
+
 ### `npm start`
 
 Runs the app in the development mode.\
